@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import apiClient from '../services/apiClient';
+import http, { api } from '../services/apiClient';
 
 // Parse feature flags from env var JSON or comma-separated list
 function parseFeatureFlags() {
@@ -32,7 +32,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   /**
    * Provides authentication state and actions.
-   * Persists a token in localStorage (key: 'sb_token') and user profile stub.
+   * Persists a token in localStorage (key: 'sb_token') and user profile.
    */
   const [token, setToken] = useState(localStorage.getItem('sb_token') || null);
   const [user, setUser] = useState(() => {
@@ -40,33 +40,57 @@ export function AuthProvider({ children }) {
     return u ? JSON.parse(u) : null;
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const features = useMemo(parseFeatureFlags, []);
 
+  // Keep localStorage synced
   useEffect(() => {
     if (token) localStorage.setItem('sb_token', token);
     else localStorage.removeItem('sb_token');
   }, [token]);
-
   useEffect(() => {
     if (user) localStorage.setItem('sb_user', JSON.stringify(user));
     else localStorage.removeItem('sb_user');
   }, [user]);
 
+  // Validate session by calling /users/me if token exists
+  useEffect(() => {
+    let isMounted = true;
+    async function validate() {
+      if (!token) return;
+      try {
+        setLoading(true);
+        const me = await api.me();
+        if (isMounted) setUser(me);
+      } catch (e) {
+        if (isMounted) {
+          setError('Session expired. Please sign in again.');
+          setToken(null);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    validate();
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
+
   // PUBLIC_INTERFACE
   const login = async (email, password) => {
     setLoading(true);
+    setError(null);
     try {
-      // Stub auth request; replace with backend endpoint if available
-      // const res = await apiClient.post('/auth/login', { email, password });
-      // const { token: tkn, user: usr } = res.data;
-
-      const tkn = 'demo-token';
-      const usr = { id: 'me', email };
+      const { token: tkn, user: usr } = await api.login(email, password);
       setToken(tkn);
       setUser(usr);
       return { success: true };
     } catch (e) {
-      return { success: false, error: e?.response?.data || e.message };
+      const msg = e?.response?.data?.message || e?.response?.data?.detail || e.message || 'Login failed';
+      setError(msg);
+      return { success: false, error: msg };
     } finally {
       setLoading(false);
     }
@@ -75,16 +99,16 @@ export function AuthProvider({ children }) {
   // PUBLIC_INTERFACE
   const register = async (email, password) => {
     setLoading(true);
+    setError(null);
     try {
-      // const res = await apiClient.post('/auth/register', { email, password });
-      // const { token: tkn, user: usr } = res.data;
-      const tkn = 'demo-token';
-      const usr = { id: 'me', email };
+      const { token: tkn, user: usr } = await api.register(email, password);
       setToken(tkn);
       setUser(usr);
       return { success: true };
     } catch (e) {
-      return { success: false, error: e?.response?.data || e.message };
+      const msg = e?.response?.data?.message || e?.response?.data?.detail || e.message || 'Registration failed';
+      setError(msg);
+      return { success: false, error: msg };
     } finally {
       setLoading(false);
     }
@@ -94,11 +118,12 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setToken(null);
     setUser(null);
+    setError(null);
   };
 
   const value = useMemo(
-    () => ({ token, user, loading, login, register, logout, features }),
-    [token, user, loading, features]
+    () => ({ token, user, loading, error, login, register, logout, features, http, api }),
+    [token, user, loading, error, features]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
