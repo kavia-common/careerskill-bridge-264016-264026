@@ -1,82 +1,45 @@
-# Lightweight React Template for KAVIA
+# SkillBridge LMS Frontend (React)
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+## Overview
+This is the main web UI for SkillBridge LMS. It consumes the FastAPI backend via REST and uses a WebSocket for real-time notifications. The app is designed to be lightweight and uses environment variables for runtime configuration.
 
-## Features
+## Environment Variables
+Create a .env file in the frontend_web_app directory (or export envs in your shell) with:
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+- REACT_APP_API_BASE: Base URL of the backend API (e.g., http://localhost:3001)
+- REACT_APP_WS_URL: WebSocket base URL for notifications (e.g., ws://localhost:3001/ws/notifications)
 
-## Getting Started
+Optional:
+- REACT_APP_LOG_LEVEL: debug | info | warn | error (default info)
 
-In the project directory, you can run:
+These variables are read by src/services/apiClient.js and src/services/wsClient.js to configure API and WebSocket endpoints.
 
-### `npm start`
+## Start the App
+- npm install
+- npm start
+The dev server runs on http://localhost:3000 and proxies requests directly to the backend URL you configured in REACT_APP_API_BASE.
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Main Screens
+After authentication, the app provides quick access to the core learning flow:
+- Dashboard: High-level overview and recommendations.
+- Modules: Browse modules, open a module, view lessons, and take quizzes.
+- Portfolio: View and edit portfolio items; add credentials or links.
+- Mentorship: Browse mentors, view details, and request mentorship.
+- Job Tools: Resume preview, interview simulator, and soft skills tips.
+- Settings: Language, theme, and basic preferences.
 
-### `npm test`
+## E2E Smoke Checklist (UI)
+Use a fresh user session and verify happy-path interactions:
+1. Register and Login: Create an account and confirm you land on Dashboard.
+2. Modules List: Open Modules, ensure modules render.
+3. Lesson View & Complete: Open a lesson and mark complete.
+4. Quiz Start & Submit: Start a quiz from a module and submit answers; see a score.
+5. Progress: Check Dashboard or Progress widget updates.
+6. Mentorship Request: Open Mentorship, choose a mentor, and submit a request.
+7. Portfolio CRUD: Open Portfolio, create an item, edit it, then delete it.
+8. Notifications: Confirm notifications load; if configured, connect to WebSocket and observe updates.
 
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
-```
-
-### Components
-
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
-
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
-
-## Learn More
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Developer Notes
+- API methods are defined in src/services/apiClient.js.
+- WebSocket helper is in src/services/wsClient.js and expects a JWT from localStorage key sb_token.
+- Protected routes are enforced by routes/ProtectedRoute.jsx based on authentication state.
