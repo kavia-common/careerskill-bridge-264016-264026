@@ -24,7 +24,7 @@ export default function Booking() {
     setErr(null);
     setOk(null);
     try {
-      await api.requestMentorship({ mentor_id: mentorId, note });
+      await api.requestMentorship({ mentor_id: Number(mentorId), message: note });
       setOk('Request sent!');
     } catch (e) {
       setErr(e?.response?.data?.detail || e.message || 'Failed to send request');

@@ -17,8 +17,16 @@ export default function ProgressWidget() {
       try {
         setLoading(true);
         const data = await api.getProgress();
-        const pct = Number(data?.percent || data?.completion || 0);
-        if (isMounted) setProgress(Math.max(0, Math.min(100, Math.round(pct))));
+        // Backend returns an array of ProgressOut { progress_percent, ... }
+        let pct = 0;
+        if (Array.isArray(data) && data.length > 0) {
+          const avg =
+            data.reduce((sum, item) => sum + (Number(item?.progress_percent || 0)), 0) / data.length;
+          pct = avg;
+        } else if (typeof data === 'number') {
+          pct = data;
+        }
+        if (isMounted) setProgress(Math.max(0, Math.min(100, Math.round(Number(pct) || 0))));
       } catch (e) {
         if (isMounted) setErr(e?.response?.data?.detail || e.message || 'Failed to load progress');
       } finally {

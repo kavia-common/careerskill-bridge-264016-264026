@@ -30,8 +30,10 @@ export default function ModuleDetail() {
     return () => { isMounted = false; };
   }, [api, id]);
 
-  const lessons = module?.lessons || [];
-  const quizzes = module?.quizzes || [];
+  // Backend ModuleOut does not embed lessons/quizzes in the schema;
+  // keep defensive defaults so UI remains stable even if arrays are absent.
+  const lessons = Array.isArray(module?.lessons) ? module.lessons : [];
+  const quizzes = Array.isArray(module?.quizzes) ? module.quizzes : [];
 
   return (
     <div>

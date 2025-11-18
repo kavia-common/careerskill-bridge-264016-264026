@@ -18,7 +18,7 @@ export default function PortfolioViewer() {
       try {
         setLoading(true);
         const data = await api.getPortfolio();
-        if (isMounted) setPortfolio(data);
+        if (isMounted) setPortfolio(Array.isArray(data) ? data : (data?.items || []));
       } catch (e) {
         if (isMounted) setErr(e?.response?.data?.detail || e.message || 'Failed to load portfolio');
       } finally {
@@ -36,15 +36,21 @@ export default function PortfolioViewer() {
       {err && <div role="alert" style={{ color: 'var(--color-error)' }}>{err}</div>}
       {!loading && !err && (
         <>
-          {!portfolio ? (
+          {(!Array.isArray(portfolio) || portfolio.length === 0) ? (
             <p className="empty">No portfolio yet.</p>
           ) : (
             <>
-              <strong>{portfolio.title}</strong>
-              <p className="text-muted">{portfolio.description}</p>
+              <ul className="m-0">
+                {portfolio.map((item) => (
+                  <li key={item.id}>
+                    <strong>{item.title}</strong>
+                    {item.description ? <span className="text-muted"> — {item.description}</span> : null}
+                  </li>
+                ))}
+              </ul>
             </>
           )}
-          <Link className="btn mt-16" to="/portfolio/edit">{portfolio ? 'Edit' : 'Create'}</Link>
+          <Link className="btn mt-16" to="/portfolio/edit">{(Array.isArray(portfolio) && portfolio.length > 0) ? 'Edit' : 'Create'}</Link>
         </>
       )}
     </div>

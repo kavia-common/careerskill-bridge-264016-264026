@@ -16,7 +16,7 @@ export default function NotificationsBell() {
       try {
         const data = await api.listNotifications();
         const items = Array.isArray(data) ? data : (data?.items || []);
-        if (isMounted) setCount(items.filter((n) => !n.read).length);
+        if (isMounted) setCount(items.filter((n) => !n.is_read).length);
       } catch {
         // ignore errors to avoid noisy UI
       }

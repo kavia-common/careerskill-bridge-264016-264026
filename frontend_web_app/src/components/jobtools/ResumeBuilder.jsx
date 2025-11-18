@@ -16,7 +16,7 @@ export default function ResumeBuilder() {
     setErr(null);
     setPreview(null);
     try {
-      const data = await api.resumePreview({ name, summary });
+      const data = await api.resumePreview({ content: `Name: ${name}\n\nSummary: ${summary}`.trim() });
       setPreview(data);
     } catch (e) {
       setErr(e?.response?.data?.detail || e.message || 'Failed to generate preview');

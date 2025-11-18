@@ -117,9 +117,9 @@ export const api = {
     return res.data;
   },
   // PUBLIC_INTERFACE
-  async startQuiz(id) {
-    /** Start a quiz attempt. */
-    const res = await http.post(`/quizzes/${encodeURIComponent(id)}/start`);
+  async startQuiz(moduleId) {
+    /** Start a quiz attempt for a module (path param is module_id). */
+    const res = await http.post(`/quizzes/${encodeURIComponent(moduleId)}/start`);
     return res.data;
   },
   // PUBLIC_INTERFACE
@@ -141,7 +141,7 @@ export const api = {
   // PUBLIC_INTERFACE
   async listMentors() {
     /** List available mentors. */
-    const res = await http.get('/mentors');
+    const res = await http.get('/mentorship/mentors');
     return res.data;
   },
   // PUBLIC_INTERFACE
@@ -154,7 +154,7 @@ export const api = {
   // PORTFOLIO
   // PUBLIC_INTERFACE
   async getPortfolio() {
-    /** Fetch current user's portfolio. */
+    /** Fetch current user's portfolio (array of items). */
     const res = await http.get('/portfolio');
     return res.data;
   },

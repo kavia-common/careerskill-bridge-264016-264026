@@ -21,8 +21,23 @@ export default function QuizRunner() {
     async function start() {
       try {
         setLoading(true);
-        const data = await api.startQuiz(quizId);
-        if (isMounted) setQuiz(data);
+        // Backend expects module_id for /quizzes/{module_id}/start
+        const data = await api.startQuiz(id);
+        // Normalize questions to {id, text, options:[{value,label}]}
+        const normalized = {
+          ...data,
+          questions: (data?.questions || []).map((q) => ({
+            id: q.id,
+            text: q.prompt,
+            options: [
+              { value: 'A', label: q.option_a },
+              { value: 'B', label: q.option_b },
+              { value: 'C', label: q.option_c },
+              { value: 'D', label: q.option_d },
+            ].filter((o) => o.label != null),
+          })),
+        };
+        if (isMounted) setQuiz(normalized);
       } catch (e) {
         if (isMounted) setErr(e?.response?.data?.detail || e.message || 'Failed to start quiz');
       } finally {

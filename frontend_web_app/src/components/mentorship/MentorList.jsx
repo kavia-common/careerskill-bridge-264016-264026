@@ -39,7 +39,7 @@ export default function MentorList() {
           {mentors.length === 0 && <div className="empty">No mentors available.</div>}
           {mentors.map((m) => (
             <div key={m.id || m.mentor_id} className="card">
-              <h3 className="m-0">{m.name || `Mentor ${m.id || m.mentor_id}`}</h3>
+              <h3 className="m-0">{m.full_name || m.name || `Mentor ${m.id || m.mentor_id}`}</h3>
               <div className="mt-12">
                 <Link className="btn" to={`/mentorship/${encodeURIComponent(m.id || m.mentor_id)}`}>View</Link>
               </div>

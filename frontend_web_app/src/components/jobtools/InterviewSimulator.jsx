@@ -15,7 +15,8 @@ export default function InterviewSimulator() {
     setErr(null);
     setResp(null);
     try {
-      const data = await api.interviewSimulate({ role });
+      const payload = role ? { role } : { role: 'general' };
+      const data = await api.interviewSimulate(payload);
       setResp(data);
     } catch (e) {
       setErr(e?.response?.data?.detail || e.message || 'Failed to simulate');
