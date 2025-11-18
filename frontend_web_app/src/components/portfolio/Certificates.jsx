@@ -6,7 +6,7 @@ export default function Certificates() {
   return (
     <div className="card">
       <h3 className="m-0 mb-16">Certificates</h3>
-      <p className="text-muted">No certificates yet.</p>
+      <p className="empty">No certificates yet.</p>
     </div>
   );
 }
