@@ -1,0 +1,42 @@
+{
+  "app": {
+    "title": "SkillBridge LMS",
+    "logout": "Cerrar sesión",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "language": "Idioma",
+    "notifications": "Notificaciones"
+  },
+  "nav": {
+    "dashboard": "Tablero",
+    "modules": "Módulos",
+    "portfolio": "Portafolio",
+    "mentorship": "Mentoría",
+    "jobTools": "Herramientas de Trabajo",
+    "settings": "Configuración"
+  },
+  "auth": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "noAccount": "¿No tienes una cuenta?",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta"
+  },
+  "pages": {
+    "dashboard": "Tablero",
+    "modules": "Módulos",
+    "moduleDetail": "Detalle del módulo",
+    "lessonViewer": "Visor de lecciones",
+    "quizRunner": "Ejecución de cuestionarios",
+    "mentorship": "Mentoría",
+    "portfolio": "Portafolio",
+    "jobTools": "Herramientas de trabajo",
+    "settings": "Configuración",
+    "comingSoon": "Próximamente",
+    "welcome": "Bienvenido de nuevo",
+    "progress": "Tu progreso",
+    "recommendations": "Recomendaciones"
+  }
+}
