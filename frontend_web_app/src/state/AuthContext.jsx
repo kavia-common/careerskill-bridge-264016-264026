@@ -88,7 +88,14 @@ export function AuthProvider({ children }) {
         throw new Error('Login succeeded but no access token was returned.');
       }
 
-      // Persist token first so api.me() uses it via Axios interceptor
+      /**
+       * Critical: our Axios interceptor reads the token from localStorage.
+       * React state updates + useEffect syncing token->localStorage are async, so
+       * calling api.me() immediately after setToken(tkn) can race and send no header.
+       *
+       * Fix: write localStorage synchronously before api.me().
+       */
+      localStorage.setItem('sb_token', tkn);
       setToken(tkn);
 
       // Fetch user profile after login to populate context and enable guards/UI.
@@ -103,6 +110,11 @@ export function AuthProvider({ children }) {
         e.message ||
         'Login failed';
       setError(msg);
+
+      // Clear any possibly-written token/user to avoid stuck/invalid sessions.
+      localStorage.removeItem('sb_token');
+      localStorage.removeItem('sb_user');
+
       setToken(null);
       setUser(null);
       return { success: false, error: msg };
@@ -121,6 +133,8 @@ export function AuthProvider({ children }) {
         throw new Error('Registration succeeded but no access token was returned.');
       }
 
+      // See login() for rationale: ensure interceptor can read token immediately.
+      localStorage.setItem('sb_token', tkn);
       setToken(tkn);
 
       // Fetch user profile after registration for consistent post-auth state.
@@ -135,6 +149,10 @@ export function AuthProvider({ children }) {
         e.message ||
         'Registration failed';
       setError(msg);
+
+      localStorage.removeItem('sb_token');
+      localStorage.removeItem('sb_user');
+
       setToken(null);
       setUser(null);
       return { success: false, error: msg };
