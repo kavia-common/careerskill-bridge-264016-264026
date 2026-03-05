@@ -74,15 +74,23 @@ export const api = {
   // AUTH
   // PUBLIC_INTERFACE
   async register(email, password) {
-    /** Register a new user. Returns { token, user }. */
+    /** Register a new user. Returns { token, tokenType }. */
     const res = await http.post('/auth/register', { email, password });
-    return res.data;
+    const data = res.data || {};
+    return {
+      token: data.access_token,
+      tokenType: data.token_type || 'bearer',
+    };
   },
   // PUBLIC_INTERFACE
   async login(email, password) {
-    /** Login with credentials. Returns { token, user }. */
+    /** Login with credentials. Returns { token, tokenType }. */
     const res = await http.post('/auth/login', { email, password });
-    return res.data;
+    const data = res.data || {};
+    return {
+      token: data.access_token,
+      tokenType: data.token_type || 'bearer',
+    };
   },
   // PUBLIC_INTERFACE
   async me() {

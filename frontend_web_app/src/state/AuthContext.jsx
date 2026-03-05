@@ -83,13 +83,28 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const { token: tkn, user: usr } = await api.login(email, password);
+      const { token: tkn } = await api.login(email, password);
+      if (!tkn) {
+        throw new Error('Login succeeded but no access token was returned.');
+      }
+
+      // Persist token first so api.me() uses it via Axios interceptor
       setToken(tkn);
-      setUser(usr);
+
+      // Fetch user profile after login to populate context and enable guards/UI.
+      const me = await api.me();
+      setUser(me);
+
       return { success: true };
     } catch (e) {
-      const msg = e?.response?.data?.message || e?.response?.data?.detail || e.message || 'Login failed';
+      const msg =
+        e?.response?.data?.message ||
+        e?.response?.data?.detail ||
+        e.message ||
+        'Login failed';
       setError(msg);
+      setToken(null);
+      setUser(null);
       return { success: false, error: msg };
     } finally {
       setLoading(false);
@@ -101,13 +116,27 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const { token: tkn, user: usr } = await api.register(email, password);
+      const { token: tkn } = await api.register(email, password);
+      if (!tkn) {
+        throw new Error('Registration succeeded but no access token was returned.');
+      }
+
       setToken(tkn);
-      setUser(usr);
+
+      // Fetch user profile after registration for consistent post-auth state.
+      const me = await api.me();
+      setUser(me);
+
       return { success: true };
     } catch (e) {
-      const msg = e?.response?.data?.message || e?.response?.data?.detail || e.message || 'Registration failed';
+      const msg =
+        e?.response?.data?.message ||
+        e?.response?.data?.detail ||
+        e.message ||
+        'Registration failed';
       setError(msg);
+      setToken(null);
+      setUser(null);
       return { success: false, error: msg };
     } finally {
       setLoading(false);
